@@ -32,7 +32,7 @@ class SystemDATA{
     }
     agregarLibro(indexA,nombre, numeroPaginas, fechaPublicacion, editorial, genero){
         const libro = new Libro(nombre,numeroPaginas,fechaPublicacion,editorial,genero)
-        var a = this.autores[indexA].libros.push(libro)
+        var a = this.autores[indexA - 1].libros.push(libro)
     }
     mostrarLibros(index){
         for (let autor of this.autores) {
@@ -44,23 +44,23 @@ class SystemDATA{
         }
     }
     actualizarNombreLibro(indexA, indexL, nombre){
-        const libro = this.autores[indexA].libros[indexL]
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
         libro.nombre = nombre
     }
     actualizarNumLibro(indexA, indexL, numero){
-        const libro = this.autores[indexA].libros[indexL]
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
         libro.numeroPaginas = numero
     }
     actualizarFechaLibro(indexA, indexL, fecha){
-        const libro = this.autores[indexA].libros[indexL]
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
         libro.fechaPublicacion = fecha
     }
     actualizarEditorialLibro(indexA, indexL, editorial){
-        const libro = this.autores[indexA].libros[indexL]
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
         libro.editorial = editorial
     }
     actualizarGeneroLibro(indexA, indexL, genero){
-        const libro = this.autores[indexA].libros[indexL]
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
         libro.genero = genero
     }
 }
