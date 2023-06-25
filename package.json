@@ -1,0 +1,8 @@
+{
+  "name": "SistemaCrud",
+  "version": "1.0.0",
+  "dependencies": {
+    "inquirer": "^9.2.7"
+  },
+  "type": "module"
+}
