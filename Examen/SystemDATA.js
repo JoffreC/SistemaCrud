@@ -1,82 +1,13 @@
 import inquirer from 'inquirer';
-
-class SystemDATA {
-    autores = []
-    id = 0
-    crearAutor(nombre, numeroLibros, fechaNacimiento, estado, libros) {
-        var autor = new Autor(nombre, numeroLibros, fechaNacimiento, estado, libros)
-        this.id++
-        this.autores.push(autor)
-        this.mostrarAutores()
-    }
-    mostrarAutores() {
-        var i = 0
-        for (let autor1 of this.autores) {
-            console.log(i + 1)
-            console.log(autor1);
-        }
-
-    }
-    actualizarNombreAutor(index, nombre) {
-        const a = this.autores[index - 1]
-        a.nombre = nombre
-    }
-    actualizarFechaNacimientoAutor(index, fecha) {
-        const a = this.autores[index - 1]
-        a.fechaNacimiento = fecha
-    }
-    actualizarActivoAutor(index, activo) {
-        const a = this.autores[index - 1]
-        a.activo = activo
-    }
-    eliminarAutor(index) {
-        this.autores.splice(index - 1, 1)
-    }
-    agregarLibro(indexA, libro) {
-        //const libro = new Libro(nombre, numeroPaginas, fechaPublicacion, editorial, genero)
-        var a = this.autores[indexA - 1].libros.push(libro)
-        this.autores[indexA - 1].numeroLibros += 1
-    }
-    crearLibro(nombre, numeroPaginas, fechaPublicacion, editorial, genero) {
-        const libro = new Libro(nombre, numeroPaginas, fechaPublicacion, editorial, genero)
-        return libro
-    }
-    mostrarLibros(index) {
-        let autor = this.autores[index - 1]
-        var i = 0
-        for (let libro of autor.libros) {
-            console.log(i + 1);
-            console.log(libro);
-            i++;
-        }
-    }
-    eliminarLibro(index, numLibro){
-        let autor = this.autores[index - 1];
-        autor.libros.splice(numLibro,1)
-    }
-    actualizarNombreLibro(indexA, indexL, nombre) {
-        const libro = this.autores[indexA - 1].libros[indexL - 1]
-        libro.titulo = nombre
-    }
-    actualizarNumLibro(indexA, indexL, numero) {
-        const libro = this.autores[indexA - 1].libros[indexL - 1]
-        libro.numeroPaginas = numero
-    }
-    actualizarFechaLibro(indexA, indexL, fecha) {
-        const libro = this.autores[indexA - 1].libros[indexL - 1]
-        libro.fechaPublicacion = fecha
-    }
-    actualizarEditorialLibro(indexA, indexL, editorial) {
-        const libro = this.autores[indexA - 1].libros[indexL - 1]
-        libro.editorial = editorial
-    }
-    actualizarGeneroLibro(indexA, indexL, genero) {
-        const libro = this.autores[indexA - 1].libros[indexL - 1]
-        libro.genero = genero
-    }
-}
+import fs from 'fs';
 
 class Libro {
+    titulo
+    numeroPaginas
+    fechaPublicacion
+    editorial
+    genero
+
     constructor(titulo, numeroPaginas, fechaPublicacion, editorial, genero) {
         this.titulo = titulo
         this.numeroPaginas = numeroPaginas
@@ -88,6 +19,11 @@ class Libro {
 
 class Autor {
     libros = []
+    nombre
+    numeroLibros
+    fechaNacimiento
+    activo
+
     constructor(nombre, numeroLibros, fechaNacimiento, activo, libros) {
         this.nombre = nombre
         this.numeroLibros = numeroLibros
@@ -96,8 +32,169 @@ class Autor {
         this.libros = libros
     }
 }
-let sd = new SystemDATA()
 
+class SystemDATA {
+    autores = []
+    id = 0
+    constructor() {
+        var datosLeidos
+        try{
+        fs.readFile('datos.json', 'utf-8', (err, datosLeidos) => {
+                if (err) {
+                    console.error('Error al leer el archivo:', err);
+                }else {
+                    if (datosLeidos.length > 0) {
+                        var datos = JSON.parse(datosLeidos)
+                        var autors = datos.autores
+                        for (const autorData of autors) {
+                            // Obtener los datos del autor
+                            const nombre1 = autorData.nombre;
+                            const numeroLibros1 = autorData.numeroLibros;
+                            const activo1 = autorData.activo;
+                            const fechaNacimiento1 = new Date(autorData.fechaNacimiento);
+                            // Obtener los libros del autor
+                            const librosData = autorData.libros;
+                            const libros = [];
+                            // Recorrer los datos de los libros y crear objetos de la clase Libro
+                            for (const libroData of librosData) {
+                                const titulo = libroData.titulo;
+                                const numeroPaginas = libroData.numeroPaginas;
+                                const genero = libroData.genero;
+                                const editorial = libroData.editorial;
+                                const fechaPublicacion = new Date(libroData.fechaPublicacion);
+                                const libro = new Libro(titulo, numeroPaginas, genero, editorial, fechaPublicacion);
+                                libros.push(libro);
+                            }
+                            // Crear el objeto de la clase Autor con los datos recuperados
+                            const autor = new Autor(nombre1, numeroLibros1, activo1, fechaNacimiento1, libros);
+                            this.autores.push(autor)
+                            this.id++
+                        }
+                    }
+                }
+            }
+        )
+        }catch (e) {
+            console.error('Archivo no se pudo leer')
+        }
+    }
+    crearAutor(nombre, numeroLibros, fechaNacimiento, estado, libros) {
+        var autor = new Autor(nombre, numeroLibros, fechaNacimiento, estado, libros)
+        this.id++
+        this.autores.push(autor)
+    }
+
+    mostrarAutores() {
+        var i = 0
+        for (let autor1 of this.autores) {
+            console.log("Autor " + (i + 1))
+            console.log(autor1);
+        }
+    }
+    actualizarNombreAutor(index, nombre1) {
+        var a = this.autores[index - 1]
+        console.log(a)
+        a.nombre = nombre1
+    }
+    actualizarFechaNacimientoAutor(index, fecha) {
+        const a = this.autores[index - 1]
+        a.fechaNacimiento = fecha
+    }
+
+    actualizarActivoAutor(index, activo) {
+        const a = this.autores[index - 1]
+        a.activo = activo
+    }
+
+    eliminarAutor(index) {
+        this.autores.splice(index - 1, 1)
+    }
+
+    agregarLibro(indexA, libro) {
+        //const libro = new Libro(nombre, numeroPaginas, fechaPublicacion, editorial, genero)
+        var a = this.autores[indexA - 1].libros.push(libro)
+        this.autores[indexA - 1].numeroLibros += 1
+    }
+
+    crearLibro(nombre, numeroPaginas, fechaPublicacion, editorial, genero) {
+        const libro = new Libro(nombre, numeroPaginas, fechaPublicacion, editorial, genero)
+        return libro
+    }
+
+    mostrarLibros(index) {
+        let autor = this.autores[index - 1]
+        var i = 0
+        for (let libro of autor.libros) {
+            console.log("Libro " + (i + 1));
+            console.log(libro);
+            i++;
+        }
+    }
+
+    eliminarLibro(index, numLibro) {
+        let autor = this.autores[index - 1];
+        autor.libros.splice(numLibro, 1)
+        autor.numeroLibros -= 1
+    }
+
+    actualizarNombreLibro(indexA, indexL, nombre) {
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
+        libro.titulo = nombre
+    }
+
+    actualizarNumLibro(indexA, indexL, numero) {
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
+        libro.numeroPaginas = numero
+    }
+
+    actualizarFechaLibro(indexA, indexL, fecha) {
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
+        libro.fechaPublicacion = fecha
+    }
+
+    actualizarEditorialLibro(indexA, indexL, editorial) {
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
+        libro.editorial = editorial
+    }
+
+    actualizarGeneroLibro(indexA, indexL, genero) {
+        const libro = this.autores[indexA - 1].libros[indexL - 1]
+        libro.genero = genero
+    }
+
+    async guardar() {
+        {
+            new Promise((resolve, reject) => {
+                fs.writeFile('datos.json', JSON.stringify(this), (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve('Archivo guardado correctamenrte');
+                    }
+                });
+            });
+            /*this.datos = {
+                autoresGuardados: this.autores,
+                idSave: this.id
+            }
+            var datosAGuardar = JSON.stringify(this)
+            await fs.writeFile(
+                './datos.json', datosAGuardar,
+                (errorEscritura) => {
+                    if (errorEscritura) {
+                        console.error(errorEscritura)
+                        rej('Error escribiendo archivo de autores')
+                    } else {
+                        res("El archivo se escribio correctamente ")
+                    }
+                }
+            )*/
+
+        }
+    }
+}
+
+var sd = new SystemDATA()
 const menuPrincipal = [
     {
         type: 'list',
@@ -273,15 +370,18 @@ const nuevoGenero = [
         ]
     }
 ]
-async function actualizarNombre(){
+
+async function actualizarNombre() {
     var respuesta = await inquirer.prompt(nuevoNombreAutor);
     return respuesta.nombreNuevo.toString()
 }
-async function actualizarFechaN(){
+
+async function actualizarFechaN() {
     var respuesta = await inquirer.prompt(nuevaFechaAutor);
     var fechaA = new Date(respuesta.fechaNuevaA.toString())
     return fechaA
 }
+
 const nuevoEstado = [
     {
         type: 'list',
@@ -293,30 +393,37 @@ const nuevoEstado = [
         ]
     }
 ]
-async function actualizarEstado(){
+
+async function actualizarEstado() {
     var respuesta = await inquirer.prompt(nuevoEstado)
     return respuesta.estado.toString()
 }
-async function actualizarTitulo(){
+
+async function actualizarTitulo() {
     var respuesta = await inquirer.prompt(nuevoTituloLibro);
     return respuesta.tituloNuevo.toString()
 }
-async function actualizarNumeroPaginas(){
+
+async function actualizarNumeroPaginas() {
     var respuesta = await inquirer.prompt(nuevoNumeroPaginasLibro);
     return parseInt(respuesta.tituloNuevo.toString());
 }
-async function actualizarFechaL(){
+
+async function actualizarFechaL() {
     var respuesta = await inquirer.prompt(nuevaFechaLibro);
     return new Date(respuesta.fechaNuevaL.toString())
 }
-async function actualizarEditorial(){
+
+async function actualizarEditorial() {
     var respuesta = await inquirer.prompt(nuevaEditorial);
     return respuesta.nuevaEditorial.toString();
 }
-async function actualizarGenero(){
+
+async function actualizarGenero() {
     var respuesta = await inquirer.prompt(nuevoGenero);
     return respuesta.genero.toString();
 }
+
 async function menuAA(index) {
     try {
         await inquirer.prompt(menuActualizacionAutor).then(async respuestas => {
@@ -335,9 +442,9 @@ async function menuAA(index) {
                 case ("- Actualizar estado"):
                     var estado = false
                     var cont = await actualizarEstado()
-                    if(cont === 'Activo: aun escribe libros'){
+                    if (cont === 'Activo: aun escribe libros') {
                         estado = true
-                    }else{
+                    } else {
                         estado = false
                     }
                     sd.actualizarActivoAutor(index, estado)
@@ -351,13 +458,13 @@ async function menuAA(index) {
                 case ("- Eliminar libro"):
                     sd.mostrarLibros(index);
                     var numLibro = await eleccionLibro();
-                    sd.eliminarLibro(index, numLibro-1);
+                    sd.eliminarLibro(index, numLibro );
                     console.log("Libro eliminado exitosamente")
                     break;
                 case ("- Actualizar libro"):
                     sd.mostrarLibros(index)
                     var numLibro1 = await eleccionLibro();
-                    await menuAAL(index, numLibro1 - 1)
+                    await menuAAL(index, numLibro1)
                     break;
                 case ("Atras"):
                     main()
@@ -369,6 +476,7 @@ async function menuAA(index) {
         console.error(e)
     }
 }
+
 async function menuAAL(index, numLibro) {
     try {
         await inquirer.prompt(menuActualizacionLibro).then(async respuestas => {
@@ -376,7 +484,7 @@ async function menuAAL(index, numLibro) {
             switch (respuesta) {
                 case ('- Actualizar titulo'):
                     var nuevoTitulo = await actualizarTitulo()
-                    sd.actualizarNombreLibro(index,numLibro,nuevoTitulo)
+                    sd.actualizarNombreLibro(index, numLibro, nuevoTitulo)
                     console.log('Actualización de titulo de libro exitosa')
                     break;
                 case ("- Actualizar numero paginas"):
@@ -409,45 +517,36 @@ async function menuAAL(index, numLibro) {
         console.error(e)
     }
 }
-async function eleccionAutor(){
+
+async function eleccionAutor() {
     const respuesta = await inquirer.prompt(menuEleccionAutor);
     return parseInt(respuesta.numeroAutor);
 }
-async function eleccionLibro(){
+
+async function eleccionLibro() {
     const respuesta = await inquirer.prompt(menuEleccionLibro);
     return parseInt(respuesta.numeroLibro);
 }
+
 async function creacionLibro(numLibro) {
     console.log(" Creacion libro " + (numLibro + 1))
     const respuestas = await inquirer.prompt(menuCreacionLibro);
-        const titulo = respuestas.tituloLibro
-        const numeroPaginas = respuestas.numeroPaginas
-        const fechaPublicacion = respuestas.fechaPublicacion
-        const editorial = respuestas.editorial
-        const genero = respuestas.genero
-        return sd.crearLibro(titulo, numeroPaginas, fechaPublicacion, editorial, genero)
+    const titulo = respuestas.tituloLibro
+    const numeroPaginas = respuestas.numeroPaginas
+    const fechaPublicacion = respuestas.fechaPublicacion
+    const editorial = respuestas.editorial
+    const genero = respuestas.genero
+    return sd.crearLibro(titulo, numeroPaginas, fechaPublicacion, editorial, genero)
 }
-/*async function creacionLibro(numLibro) {
-  console.log("Creación libro " + (numLibro + 1));
-
-  const respuestas = await inquirer.prompt(menuCreacionLibro);
-  const titulo = respuestas.tituloLibro;
-  const numeroPaginas = respuestas.numeroPaginas;
-  const fechaPublicacion = respuestas.fechaPublicacion;
-  const editorial = respuestas.editorial;
-  const genero = respuestas.genero;
-
-  return sd.crearLibro(titulo, numeroPaginas, fechaPublicacion, editorial, genero);
-}*/
 async function creacionAutor() {
     let respuestas = await inquirer.prompt(menuCreacionAutor)
     const nombre = respuestas.nombreAutor.toString()
     const numeroLibros = parseInt(respuestas.numeroLibros)
     const fechaNacimiento = new Date(respuestas.fechaNacimiento)
     let estado = false
-    if(respuestas.estado === 'Activo: aun escribe libros'){
+    if (respuestas.estado === 'Activo: aun escribe libros') {
         estado = true
-    }else{
+    } else {
         estado = false
     }
     let libros = []
@@ -468,7 +567,7 @@ async function main() {
             switch (respuesta) {
                 case ('- Crear Autor'):
                     await creacionAutor()
-                    menuAA(sd.id - 1)
+                    main()
                     break;
                 case ("- Mostrar autores"):
                     await sd.mostrarAutores()
@@ -476,7 +575,8 @@ async function main() {
                     break;
                 case ("- Actualizar Autor"):
                     var numA = await eleccionAutor()
-                    menuAA(numA - 1)
+                    await menuAA(numA)
+                    main()
                     break;
                 case ("- Eliminar Autor"):
                     var numA1 = await eleccionAutor();
@@ -484,18 +584,15 @@ async function main() {
                     await console.log('Eliminación exitosa de autor')
                     main()
                     break;
-                case ("- Salir"):
-                    process.exit()
+                case ("Salir"):
+                    await sd.guardar()
+                    break;
             }
         })
-
     } catch (e) {
         console.error(e)
     }
 }
-var librosTest = []
-var libro = new Libro('100 anios', '200', '1900-01-01', 'Norma','Drama')
-librosTest.push(libro)
-var a = new Autor("GGM",1,new Date('1900-01-01'),true,librosTest)
-sd.crearAutor(a)
-main()
+await main()
+
+
