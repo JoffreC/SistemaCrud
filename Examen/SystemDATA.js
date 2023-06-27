@@ -1,22 +1,5 @@
 import inquirer from 'inquirer';
 import fs from 'fs';
-
-class Libro {
-    titulo
-    numeroPaginas
-    fechaPublicacion
-    editorial
-    genero
-
-    constructor(titulo, numeroPaginas, fechaPublicacion, editorial, genero) {
-        this.titulo = titulo
-        this.numeroPaginas = numeroPaginas
-        this.fechaPublicacion = fechaPublicacion
-        this.editorial = editorial
-        this.genero = genero
-    }
-}
-
 class Autor {
     libros = []
     nombre
@@ -30,6 +13,21 @@ class Autor {
         this.fechaNacimiento = fechaNacimiento
         this.activo = activo
         this.libros = libros
+    }
+}
+
+class Libro {
+    titulo
+    numeroPaginas
+    fechaPublicacion
+    editorial
+    genero
+    constructor(titulo, numeroPaginas, fechaPublicacion, editorial, genero) {
+        this.titulo = titulo
+        this.numeroPaginas = numeroPaginas
+        this.fechaPublicacion = fechaPublicacion
+        this.editorial = editorial
+        this.genero = genero
     }
 }
 
@@ -89,6 +87,7 @@ class SystemDATA {
         for (let autor1 of this.autores) {
             console.log("Autor " + (i + 1))
             console.log(autor1);
+            i++;
         }
     }
     actualizarNombreAutor(index, nombre1) {
@@ -111,7 +110,6 @@ class SystemDATA {
     }
 
     agregarLibro(indexA, libro) {
-        //const libro = new Libro(nombre, numeroPaginas, fechaPublicacion, editorial, genero)
         var a = this.autores[indexA - 1].libros.push(libro)
         this.autores[indexA - 1].numeroLibros += 1
     }
@@ -133,7 +131,7 @@ class SystemDATA {
 
     eliminarLibro(index, numLibro) {
         let autor = this.autores[index - 1];
-        autor.libros.splice(numLibro, 1)
+        autor.libros.splice(numLibro-1, 1)
         autor.numeroLibros -= 1
     }
 
@@ -173,23 +171,6 @@ class SystemDATA {
                     }
                 });
             });
-            /*this.datos = {
-                autoresGuardados: this.autores,
-                idSave: this.id
-            }
-            var datosAGuardar = JSON.stringify(this)
-            await fs.writeFile(
-                './datos.json', datosAGuardar,
-                (errorEscritura) => {
-                    if (errorEscritura) {
-                        console.error(errorEscritura)
-                        rej('Error escribiendo archivo de autores')
-                    } else {
-                        res("El archivo se escribio correctamente ")
-                    }
-                }
-            )*/
-
         }
     }
 }
@@ -262,7 +243,7 @@ const menuCreacionAutor = [
         message: 'Elija el estado',
         choices: [
             'Activo: aun escribe libros',
-            'Retirado: ya no escribe ibros',
+            'Retirado: ya no escribe libros',
         ]
     },
 ]
@@ -292,10 +273,12 @@ const menuCreacionLibro = [
         name: 'genero',
         message: 'Genero del libro: ',
         choices: [
-            '1.- Drama',
-            '2.- Suspenso',
-            '3.- Terror',
-            '4.- Romantico',
+            'Drama',
+            'Suspenso',
+            'Terror',
+            'Romantico',
+            'Ficcion',
+            'Fantasia',
             'Salir'
         ]
     }
@@ -332,21 +315,21 @@ const nuevoTituloLibro = [
     {
         type: 'input',
         name: 'tituloNuevo',
-        message: 'Ingrese el nuevo titulo del libro'
+        message: 'Ingrese el nuevo título del libro'
     }
 ]
 const nuevoNumeroPaginasLibro = [
     {
         type: 'input',
         name: 'numPagNuevo',
-        message: 'Ingrese el nuevo numero de paginas del libro'
+        message: 'Ingrese el nuevo numero de páginas del libro'
     }
 ]
 const nuevaFechaLibro = [
     {
         type: 'input',
         name: 'fechaNuevaL',
-        message: 'Ingrese la nueva fecha de publicacion'
+        message: 'Ingrese la nueva fecha de publicación'
     }
 ]
 const nuevaEditorial = [
@@ -362,10 +345,12 @@ const nuevoGenero = [
         name: 'genero',
         message: 'Genero nuevo del libro: ',
         choices: [
-            '1.- Drama',
-            '2.- Suspenso',
-            '3.- Terror',
-            '4.- Romantico',
+            'Drama',
+            'Suspenso',
+            'Terror',
+            'Romantico',
+            'Ficcion',
+            'Fantasia',
             'Salir'
         ]
     }
@@ -406,7 +391,7 @@ async function actualizarTitulo() {
 
 async function actualizarNumeroPaginas() {
     var respuesta = await inquirer.prompt(nuevoNumeroPaginasLibro);
-    return parseInt(respuesta.tituloNuevo.toString());
+    return parseInt(respuesta.numPagNuevo);
 }
 
 async function actualizarFechaL() {
@@ -593,6 +578,6 @@ async function main() {
         console.error(e)
     }
 }
-await main()
+main()
 
 
